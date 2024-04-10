@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目成员</title>
+  <link rel="stylesheet" href="../css/user.css">
+  <!-- 引入element-ui样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!--  axios网络请求库 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="2" animated :throttle="500" />
+    </div>
+
+    <div class="fen1"></div>
+
+    <el-input v-show="!fullscreenLoading" placeholder="项目成员" v-model="name" style="width: 200px;"
+      class="filter-item"></el-input>
+
+    <el-button v-show="!fullscreenLoading" icon="el-icon-search" class="dalfBut" @click="sousuo()">查询</el-button>
+
+    <el-button v-show="!fullscreenLoading" type="primary" class="butT" @click="handleCreate()">新增项目成员</el-button>
+
+    <div class="fen2"></div>
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="7" animated :throttle="500" />
+    </div>
+
+    <el-table v-show="!fullscreenLoading" :data="projectmembersList" border stripe style="width: 100%">
+      <el-table-column align="center" prop="id" label="成员编号" width="60">
+      </el-table-column>
+      <el-table-column align="center" prop="name" label="姓名">
+      </el-table-column>
+      <el-table-column align="center" prop="phone" label="联系方式">
+      </el-table-column>
+      <el-table-column align="center" prop="position" label="职位">
+      </el-table-column>
+      <el-table-column align="center" prop="lawyer_cert_num" label="律师证号">
+      </el-table-column>
+      <el-table-column align="center" prop="idcard_num" label="身份证号">
+      </el-table-column>
+      <el-table-column align="center" prop="remarks" label="备注">
+      </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+
+    <!-- 新增标签弹层 -->
+    <div class="add-form">
+      <el-dialog title="新增项目成员" :visible.sync="dialogFormVisible">
+        <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right" label-width="200px">
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="formData.name" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="联系方式" prop="phone">
+                <el-input v-model="formData.phone" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="职位" prop="position">
+                <el-input v-model="formData.position" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="律师证号" prop="lawyer_cert_num">
+                <el-input v-model="formData.lawyer_cert_num" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="身份证号" prop="idcard_num">
+                <el-input v-model="formData.idcard_num" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="备注" prop="remarks">
+                <el-input v-model="formData.remarks" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleAdd()">确定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <!-- 编辑标签弹层 -->
+    <div class="add-form">
+      <el-dialog title="编辑项目成员信息" :visible.sync="dialogFormVisible4Edit">
+        <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right" label-width="200px">
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="formData.name" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="联系方式" prop="phone">
+                <el-input v-model="formData.phone" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="职位" prop="position">
+                <el-input v-model="formData.position" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="律师证号" prop="lawyer_cert_num">
+                <el-input v-model="formData.lawyer_cert_num" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="身份证号" prop="idcard_num">
+                <el-input v-model="formData.idcard_num" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="备注" prop="remarks">
+                <el-input v-model="formData.remarks" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+          <el-button type="primary" @click="handleEdit()">确定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="3" animated :throttle="500" />
+    </div>
+
+    <!-- 分页 -->
+    <div v-show="!fullscreenLoading" class="pages" align="center">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+        :total="totalnum">
+      </el-pagination>
+    </div>
+
+
+  </div>
+</body>
+<script>
+  var vue = new Vue({
+    el: "#app",
+    data() {
+      return {
+        currentPage: 1, //初始页
+        pageSize: 10, //    每页的数据
+        totalnum: 0,
+        projectmembersList: [], //项目列表数据
+        name: '',  //姓名
+        formData: {},//表单数据
+        dialogFormVisible: false,//控制表单是否可见
+        dialogFormVisible4Edit: false,//编辑表单是否可见
+        dialogFormVisible4Pass: false,//查看密码表单是否可见
+        rules: {//校验规则
+          name: [{ required: true, message: '成员姓名为必填项', trigger: 'blur' }],
+        },
+        fullscreenLoading: true,  //加载
+      }
+    },
+    //VUE对象初始化完成后自动执行
+    created() {
+      this.openFullScreen1();
+      this.getProjectmembersAll(this.currentPage);
+    },
+    methods: {
+      //加载骨架屏
+      openFullScreen1() {
+        this.fullscreenLoading = true;
+        setTimeout(() => {
+          this.fullscreenLoading = false;
+        }, 2000);
+      },
+      sousuo() {
+        if (this.name.trim().length === 0) {
+          this.getProjectmembersAll(this.currentPage);
+        } else {
+          axios.get("http://localhost:80/admin/projectmembers/" + this.name).then((res) => {
+            this.totalnum = res.data.nums;
+            this.projectmembersList = res.data.data.map(item => ({
+              ...item
+            }));
+          });
+        }
+      },
+      //获取所有项目成员列表数据
+      getProjectmembersAll(page) {
+        axios.post("http://localhost:80/admin/projectmembers/page", { page: page, pageSize: this.pageSize }).then((res) => {
+          this.totalnum = res.data.nums;
+          this.projectmembersList = [];
+          this.projectmembersList = res.data.data.map(item => ({
+            ...item
+          }));
+        });
+      },
+      handleSizeChange(val) {
+        this.pageSize = val;
+        this.getProjectmembersAll(this.currentPage);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val;
+        this.getProjectmembersAll(val);
+      },
+      //弹出新增表单窗口
+      handleCreate() {
+        this.dialogFormVisible = true;
+        this.resetForm();
+      },
+      //重置表单
+      resetForm() {
+        this.formData = {};
+      },
+      //提交新增表单
+      handleAdd() {
+        //console.log(this.formData);
+        if (this.formData.name != null) {
+
+          axios.post("http://localhost:80/admin/projectmembers/save", this.formData).then((res) => {
+            //console.log(res.data);
+            //如果操作成功，关闭弹层，显示数据
+            if (res.data.code == 20021) {
+              this.dialogFormVisible = false;
+              this.$message.success("新增项目成员成功");
+            } else if (res.data.code == 20020) {
+              this.$message.error("新增项目成员失败");
+            } else {
+              this.$message.error("未知错误");
+            }
+          }).finally(() => {
+            this.getProjectmembersAll();
+          });
+
+        } else {
+          this.$message.warning("请按照规范填写信息");
+        }
+      },
+      //弹出编辑表单窗口
+      handleUpdate(row) {
+        this.dialogFormVisible4Edit = true;
+        console.log(row);   //row.id 查询条件
+        //查询数据，根据id查询
+        this.formData = row;
+        this.dialogFormVisible4Edit = true;
+
+      },
+      //编辑
+      handleEdit() {
+        if (this.formData.name != null) {
+          //发送ajax请求
+          axios.put("http://localhost:80/admin/projectmembers/put", this.formData).then((res) => {
+            //如果操作成功，关闭弹层，显示数据
+            if (res.data.code == 20031) {
+              this.dialogFormVisible4Edit = false;
+              this.$message.success("编辑成功");
+            } else if (res.data.code == 20030) {
+              this.$message.error("编辑失败");
+            } else {
+              this.$message.error("未知错误");
+            }
+          }).finally(() => {
+            this.getProjectmembersAll();
+          });
+        } else {
+          this.$message.warning("请按照规范填写信息");
+        }
+
+      },
+      //删除，因为项目有锁定功能，所以将删除替换为查看密码等功能
+      //删除方法名还是为删除，就不变了，以免后续维护麻烦
+      handleDelete(row) {
+        this.dialogFormVisible4Pass = true;
+        axios.get("http://localhost:80/admin/projectmembers/" + row.id).then((res) => {
+          //console.log(res);
+          if (res.data.code == 20011) {
+            //展示弹层，加载数据
+            this.formData = res.data.data;
+            this.dialogFormVisible4Pass = true;
+          } else {
+            this.$message.error("未知错误");
+          }
+        });
+      }
+    },
+
+  });
+</script>
+
+</html>

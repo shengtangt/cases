@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="../css/user.css">
+  <!-- 引入element-ui样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!--  axios网络请求库 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="2" animated :throttle="500" />
+    </div>
+
+    <div class="fen1"></div>
+
+    <el-input v-show="!fullscreenLoading" placeholder="用户名" v-model="username" style="width: 200px;"
+      class="filter-item"></el-input>
+
+    <el-button v-show="!fullscreenLoading" icon="el-icon-search" class="dalfBut" @click="sousuo()">查询</el-button>
+
+    <el-button v-show="!fullscreenLoading" type="primary" class="butT" @click="handleCreate()">新增用户</el-button>
+
+    <div class="fen2"></div>
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="7" animated :throttle="500" />
+    </div>
+
+    <el-table v-show="!fullscreenLoading" :data="userList" border stripe style="width: 100%">
+      <el-table-column align="center" prop="id" label="用户编号" width="60">
+      </el-table-column>
+      <el-table-column align="center" prop="username" label="登录用户名">
+      </el-table-column>
+      <el-table-column align="center" prop="password" label="登录密码">
+      </el-table-column>
+      <el-table-column align="center" prop="user_type" label="用户类型">
+      </el-table-column>
+      </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+
+    <!-- 新增标签弹层 -->
+    <div class="add-form">
+      <el-dialog title="新增用户" :visible.sync="dialogFormVisible">
+        <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right" label-width="200px">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="用户类型" prop="user_type">
+                <el-select v-model="formData.user_type" placeholder="请选择性别">
+                  <el-option label="超级管理员" value="SUPERADMIN"></el-option>
+                  <el-option label="管理员" value="ADMIN"></el-option>
+                  <el-option label="普通用户" value="NORMAL"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="登录用户名(英文数字组合)" prop="username">
+                <el-input v-model="formData.username" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="登录密码" prop="password">
+                <el-input v-model="formData.password" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleAdd()">确定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <!-- 编辑标签弹层 -->
+    <div class="add-form">
+      <el-dialog title="编辑用户信息" :visible.sync="dialogFormVisible4Edit">
+        <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right" label-width="200px">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="用户类型" prop="user_type">
+                <el-select v-model="formData.user_type" placeholder="请选择性别">
+                  <el-option label="超级管理员" value="SUPERADMIN"></el-option>
+                  <el-option label="管理员" value="ADMIN"></el-option>
+                  <el-option label="普通用户" value="NORMAL"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="登录用户名(英文数字组合)" prop="username">
+                <el-input v-model="formData.username" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="登录密码" prop="password">
+                <el-input v-model="formData.password" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+          <el-button type="primary" @click="handleEdit()">确定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="3" animated :throttle="500" />
+    </div>
+
+    <!-- 分页 -->
+    <div v-show="!fullscreenLoading" class="pages" align="center">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+        :total="totalnum">
+      </el-pagination>
+    </div>
+
+
+  </div>
+</body>
+<script>
+  var vue = new Vue({
+    el: "#app",
+    data() {
+      return {
+        currentPage: 1, //初始页
+        pageSize: 10, //    每页的数据
+        totalnum: 0,
+        userList: [], //用户列表数据
+        username: '',  //姓名
+        formData: {},//表单数据
+        dialogFormVisible: false,//控制表单是否可见
+        dialogFormVisible4Edit: false,//编辑表单是否可见
+        dialogFormVisible4Pass: false,//查看密码表单是否可见
+        rules: {//校验规则
+          username: [{ required: true, message: '姓名为必填项', trigger: 'blur' }],
+          password: [{ required: true, message: '密码为必填项', trigger: 'blur' }],
+        },
+        fullscreenLoading: true,  //加载
+
+
+      };
+    },
+    //VUE对象初始化完成后自动执行
+    created() {
+      this.openFullScreen1();
+      this.getWhereAll(this.currentPage);
+    },
+    methods: {
+      //加载骨架屏
+      openFullScreen1() {
+        this.fullscreenLoading = true;
+        setTimeout(() => {
+          this.fullscreenLoading = false;
+        }, 2000);
+      },
+      sousuo() {
+        if (this.username.trim().length === 0) {
+          this.getWhereAll(this.currentPage);
+        } else {
+          axios.get("http://localhost:80/admin/user/" + this.username).then((res) => {
+            this.totalnum = res.data.nums;
+            this.userList = res.data.data.map(item => ({
+              ...item
+            }));
+          });
+        }
+      },
+      //获取所有用户列表数据
+      getWhereAll(page) {
+        axios.post("http://localhost:80/admin/user/page", { page: page, pageSize: this.pageSize }).then((res) => {
+          this.totalnum = res.data.nums;
+          this.userList = [];
+          this.userList = res.data.data.map(item => ({
+            ...item
+          }));
+        });
+      },
+      handleSizeChange(val) {
+        this.pageSize = val;
+        this.getWhereAll(this.currentPage);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val;
+        this.getWhereAll(val);
+      },
+      //弹出新增表单窗口
+      handleCreate() {
+        this.dialogFormVisible = true;
+        this.resetForm();
+      },
+      //重置表单
+      resetForm() {
+        this.formData = {};
+      },
+      //提交新增表单
+      handleAdd() {
+        //console.log(this.formData);
+        if (this.formData.username != null && this.formData.password != null) {
+
+          axios.post("http://localhost:80/admin/user/save", this.formData).then((res) => {
+            //console.log(res.data);
+            //如果操作成功，关闭弹层，显示数据
+            if (res.data.code == 20021) {
+              this.dialogFormVisible = false;
+              this.$message.success("新增用户成功");
+            } else if (res.data.code == 20020) {
+              this.$message.error("新增用户失败");
+            } else {
+              this.$message.error("未知错误");
+            }
+          }).finally(() => {
+            this.getWhereAll();
+          });
+
+        } else {
+          this.$message.warning("请按照规范填写信息");
+        }
+      },
+      //弹出编辑表单窗口
+      handleUpdate(row) {
+        this.dialogFormVisible4Edit = true;
+        console.log(row);   //row.id 查询条件
+        //查询数据，根据id查询
+        this.formData = row;
+        this.dialogFormVisible4Edit = true;
+
+      },
+      //编辑
+      handleEdit() {
+        if (this.formData.username != null && this.formData.password != null) {
+          //发送ajax请求
+          axios.put("http://localhost:80/admin/user/put", this.formData).then((res) => {
+            //如果操作成功，关闭弹层，显示数据
+            if (res.data.code == 20031) {
+              this.dialogFormVisible4Edit = false;
+              this.$message.success("编辑成功");
+            } else if (res.data.code == 20030) {
+              this.$message.error("编辑失败");
+            } else {
+              this.$message.error("未知错误");
+            }
+          }).finally(() => {
+            this.getWhereAll();
+          });
+        } else {
+          this.$message.warning("请按照规范填写信息");
+        }
+
+      },
+      //删除，因为用户有锁定功能，所以将删除替换为查看密码等功能
+      //删除方法名还是为删除，就不变了，以免后续维护麻烦
+      handleDelete(row) {
+        this.dialogFormVisible4Pass = true;
+        axios.get("http://localhost:80/admin/user/" + row.id).then((res) => {
+          //console.log(res);
+          if (res.data.code == 20011) {
+            //展示弹层，加载数据
+            this.formData = res.data.data;
+            this.dialogFormVisible4Pass = true;
+          } else {
+            this.$message.error("未知错误");
+          }
+        });
+      }
+    },
+
+  });
+</script>
+
+</html>

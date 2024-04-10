@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目管理</title>
+  <link rel="stylesheet" href="../css/user.css">
+  <!-- 引入element-ui样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!--  axios网络请求库 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="2" animated :throttle="500" />
+    </div>
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="7" animated :throttle="500" />
+    </div>
+
+    <div v-show="!fullscreenLoading" border stripe style="width: 100%;margin-left:5%;margin-top:5%">
+      <template>
+        <div v-for="item in projectList">
+          <span v-if="item.our_litigant==''">xx</span>
+          <span v-else>{{item.our_litigant}}</span>
+          <span v-if="item.your_litigant==''">与xx</span>
+          <span v-else>与{{item.your_litigant}}</span>
+          <span>{{item.project_name}}</span>
+          <el-divider></el-divider>
+        </div>
+      </template>
+    </div>
+
+
+    <!-- 加载中... -->
+    <div id="loads" v-show="fullscreenLoading">
+      <el-skeleton :rows="3" animated :throttle="500" />
+    </div>
+
+    <!-- 分页 -->
+    <div v-show="!fullscreenLoading" class="pages" align="center">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+        :total="totalnum">
+      </el-pagination>
+    </div>
+
+
+  </div>
+</body>
+<script>
+  var vue = new Vue({
+    el: "#app",
+    data() {
+      return {
+        currentPage: 1, //初始页
+        pageSize: 10, //    每页的数据
+        totalnum: 0,
+        projectList: [], //项目列表数据
+        formData: {},//表单数据
+        fullscreenLoading: true,  //加载
+
+      };
+    },
+    //VUE对象初始化完成后自动执行
+    created() {
+      this.openFullScreen1();
+      this.getcasesAll(this.currentPage);
+    },
+    methods: {
+      //加载骨架屏
+      openFullScreen1() {
+        this.fullscreenLoading = true;
+        setTimeout(() => {
+          this.fullscreenLoading = false;
+        }, 2000);
+      },
+      //获取所有用户列表数据
+      getcasesAll(page) {
+        axios.post("http://localhost:80/admin/project/page", { page: page, pageSize: this.pageSize }).then((res) => {
+          this.totalnum = res.data.nums;
+          this.projectList = [];
+          this.projectList = res.data.data.map(item => ({
+            ...item
+          }));
+        });
+      },
+      handleSizeChange(val) {
+        this.pageSize = val;
+        this.getProjectsAll(this.currentPage);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val;
+        this.getProjectsAll(val);
+      },
+    },
+  });
+</script>
+
+</html>

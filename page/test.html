@@ -1,0 +1,35 @@
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目管理</title>
+  <link rel="stylesheet" href="../css/user.css">
+  <!-- 引入element-ui样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!--  axios网络请求库 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <template>
+      <ul class="el-list">
+        <li v-for="item in listData" :key="item.id">{{ item.text }}</li>
+      </ul>
+    </template>
+  </div>
+</body>
+<script>
+  var vue = new Vue({
+    el: "#app",
+    data() {
+      return {
+        listData: [{ id: 1, text: '列表项1' }, { id: 2, text: '列表项2' }, { id: 3, text: '列表项3' }]
+      }
+    }
+  })
+</script>

@@ -1,0 +1,45 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.login {
+    width: 100%;
+    height: 740px;
+    background: url("../image/beijing.jpg") no-repeat;
+    background-size: cover;
+    overflow: hidden;
+  }
+  .login-wrap {
+    background-color: #fff;
+    background-size: cover;
+    width: 400px;
+    height: 300px;
+    margin: 215px auto;
+    overflow: hidden;
+    padding-top: 10px;
+    line-height: 40px;
+    border-radius: 5px;
+  }
+  #password {
+    margin-bottom: 5px;
+  }
+  h3 {
+    color: #0babeab8;
+    font-size: 24px;
+  }
+  hr {
+    background-color: #444;
+    margin: 20px auto;
+  }
+  a {
+    text-decoration: none;
+    color: #aaa;
+    font-size: 15px;
+  }
+  a:hover {
+    color: coral;
+  }
+  .el-button {
+    width: 80%;
+    margin-left: -50px;
+  }

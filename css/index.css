@@ -1,0 +1,51 @@
+body{
+    /* width: 0;
+    padding: 0; */
+    background-color: #F0F2F5;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 400px;
+}
+
+/* #app{
+    width: 100%;
+} */
+
+.user{
+    position: absolute;
+    right: 80px;
+    top: 35px;
+    font-weight: 700;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #409EFF;
+}
+
+.layout-top{
+    width: 100%;
+    height: 80px;
+    background-color: #D6E6F3;
+    border-radius: 5px;
+}
+.layout-left{
+    margin-top: 10px;
+    float:left; 
+    overflow:auto; 
+    /* width:16%; */
+    height: 100%;
+    overflow-y: hidden;
+}
+.layout-right{
+    margin-top: 10px;
+    float:right; 
+    overflow:auto; 
+    /* width:84%;  */
+    height: 100%;
+    border-radius: 5px;
+    background-color: #fff;
+    
+}
+.layout-right iframe{
+    border: 0 none;
+    /* border:1px solid #efefef; */
+}
