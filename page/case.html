@@ -88,7 +88,7 @@
       },
       //获取所有用户列表数据
       getcasesAll(page) {
-        axios.post("http://localhost:80/admin/project/page", { page: page, pageSize: this.pageSize }).then((res) => {
+        axios.post("http://localhost:8080/admin/project/page", { page: page, pageSize: this.pageSize }).then((res) => {
           this.totalnum = res.data.nums;
           this.projectList = [];
           this.projectList = res.data.data.map(item => ({
