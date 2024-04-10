@@ -71,7 +71,7 @@
           return;
         };
         //提交登录请求
-        axios.post("http://localhost:8080/admin/user/login", this.user).then((res) => {
+        axios.post("http://120.55.96.62:8080/admin/user/login", this.user).then((res) => {
           //根据请求回来的状态码进行判断
           if (res.data.code == 20051) {
             this.dialogFormVisible4Edit = false;
