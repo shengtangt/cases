@@ -5,7 +5,7 @@ body{
 .login {
     width: 100%;
     height: 740px;
-    background: url("../image/beijing.jpg") no-repeat;
+    background: url("/image/beijing.jpg") no-repeat;
     background-size: cover;
     overflow: hidden;
   }
