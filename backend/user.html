@@ -188,7 +188,7 @@
         if (this.username.trim().length === 0) {
           this.getWhereAll(this.currentPage);
         } else {
-          axios.get("http://localhost:8080/admin/user/" + this.username).then((res) => {
+          axios.get("/admin/user/" + this.username).then((res) => {
             this.totalnum = res.data.nums;
             this.userList = res.data.data.map(item => ({
               ...item
@@ -198,7 +198,7 @@
       },
       //获取所有用户列表数据
       getWhereAll(page) {
-        axios.post("http://localhost:8080/admin/user/page", { page: page, pageSize: this.pageSize }).then((res) => {
+        axios.post("/admin/user/page", { page: page, pageSize: this.pageSize }).then((res) => {
           this.totalnum = res.data.nums;
           this.userList = [];
           this.userList = res.data.data.map(item => ({
@@ -228,7 +228,7 @@
         //console.log(this.formData);
         if (this.formData.username != null && this.formData.password != null) {
 
-          axios.post("http://localhost:8080/admin/user/save", this.formData).then((res) => {
+          axios.post("/admin/user/save", this.formData).then((res) => {
             //console.log(res.data);
             //如果操作成功，关闭弹层，显示数据
             if (res.data.code == 20021) {
@@ -260,7 +260,7 @@
       handleEdit() {
         if (this.formData.username != null && this.formData.password != null) {
           //发送ajax请求
-          axios.put("http://localhost:8080/admin/user/put", this.formData).then((res) => {
+          axios.put("/admin/user/put", this.formData).then((res) => {
             //如果操作成功，关闭弹层，显示数据
             if (res.data.code == 20031) {
               this.dialogFormVisible4Edit = false;
@@ -282,7 +282,7 @@
       //删除方法名还是为删除，就不变了，以免后续维护麻烦
       handleDelete(row) {
         this.dialogFormVisible4Pass = true;
-        axios.get("http://localhost:8080/admin/user/" + row.id).then((res) => {
+        axios.get("/admin/user/" + row.id).then((res) => {
           //console.log(res);
           if (res.data.code == 20011) {
             //展示弹层，加载数据

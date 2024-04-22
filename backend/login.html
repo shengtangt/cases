@@ -71,7 +71,7 @@
           return;
         };
         //提交登录请求
-        axios.post("http://120.55.96.62:8080/admin/user/login", this.user).then((res) => {
+        axios.post("/admin/user/login", this.user).then((res) => {
           //根据请求回来的状态码进行判断
           if (res.data.code == 20051) {
             this.dialogFormVisible4Edit = false;
@@ -80,7 +80,7 @@
             sessionStorage.setItem('username', this.user.username);
             sessionStorage.setItem('user_type', res.data.msg);
             // 跳转到 index.html
-            window.location.href = './page/index.html';
+            window.location.href = './index.html';
           } else if (res.data.code == 20050) {
             this.$message.error("用户名或密码不正确！");
           } else if (res.data.code == 20070) {
